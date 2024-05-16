@@ -37,53 +37,49 @@ hoteis = [
 class Hoteis(Resource):
     @staticmethod
     def get():
-        return {'hoteis': hoteis}  # Dicionário / Flask_restful converte para JSON
+        return {'hoteis': [hotel.json() for hotel in HotelModel.query.all()]}
 
 
 class Hotel(Resource):
-    argumentos = reqparse.RequestParser()
-    argumentos.add_argument('nome')
-    argumentos.add_argument('estrelas')
-    argumentos.add_argument('diaria')
-    argumentos.add_argument('cidade')
-
-    @staticmethod
-    def find_by_id(hotel_id):
-        for hotel in hoteis:
-            if hotel['hotel_id'] == hotel_id:
-                return hotel
-        return None
+    atributos = reqparse.RequestParser()
+    atributos.add_argument('nome')
+    atributos.add_argument('estrelas')
+    atributos.add_argument('diaria')
+    atributos.add_argument('cidade')
 
     @staticmethod
     def get(hotel_id):
-        hotel = Hotel.find_by_id(hotel_id)
+        hotel = HotelModel.find_by_id(hotel_id)
         if hotel:
-            return hotel
+            return hotel.json()
         return {'message': 'Hotel not found.'}, 404  # Not Found
 
     @staticmethod
     def post(hotel_id):
-        dados = Hotel.argumentos.parse_args()
-        obj_hotel = HotelModel(hotel_id, **dados)
-        novo_hotel = obj_hotel.json()
-        # novo_hotel = {'hotel_id': hotel_id, **dados}
-        hoteis.append(novo_hotel)
-        return novo_hotel, 200
+        if HotelModel.find_by_id(hotel_id):
+            return {"message": f"Hotel id '{hotel_id}' already exists."}, 400  # Bad request
+
+        dados = Hotel.atributos.parse_args()
+        hotel = HotelModel(hotel_id, **dados)
+        hotel.save_hotel()
+        return hotel.json()
 
     @staticmethod
     def put(hotel_id):
-        dados = Hotel.argumentos.parse_args()
-        obj_hotel = HotelModel(hotel_id, **dados)
-        novo_hotel = obj_hotel.json()
-        hotel = Hotel.find_by_id(hotel_id)
-        if hotel:
-            hotel.update(novo_hotel)
-            return novo_hotel, 200  # OK
-        hoteis.append(novo_hotel)
-        return novo_hotel, 201  # 201 = criado
+        dados = Hotel.atributos.parse_args()
+        hotel_located = HotelModel.find_by_id(hotel_id)
+        if hotel_located:
+            hotel_located.update_hotel(**dados)
+            hotel_located.save_hotel()
+            return hotel_located.json(), 200  # OK
+        hotel = HotelModel(hotel_id, **dados)
+        hotel.save_hotel()
+        return hotel.json(), 201  # 201 = criado
 
     @staticmethod
     def delete(hotel_id):
-        global hoteis
-        hoteis = [hotel for hotel in hoteis if hotel['hotel_id'] != hotel_id]
-        return {'message': 'Hotel deleted'}
+        hotel = HotelModel.find_by_id(hotel_id)
+        if hotel:
+            hotel.delete_hotel()
+            return {'message': 'Hotel deleted.'}
+        return {'message': 'Hotel not found.'}, 404

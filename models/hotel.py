@@ -25,3 +25,24 @@ class HotelModel(database.Model):
             'diaria': self.diaria,
             'cidade': self.cidade
         }
+
+    @classmethod
+    def find_by_id(cls, hotel_id):
+        hotel = cls.query.filter_by(hotel_id=hotel_id).first()
+        if hotel:
+            return hotel
+        return None
+
+    def save_hotel(self):
+        database.session.add(self)
+        database.session.commit()
+
+    def update_hotel(self, nome, estrelas, diaria, cidade):
+        self.nome = nome
+        self.estrelas = estrelas
+        self.diaria = diaria
+        self.cidade = cidade
+
+    def delete_hotel(self):
+        database.session.delete(self)
+        database.session.commit()

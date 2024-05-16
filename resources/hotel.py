@@ -1,5 +1,7 @@
 from flask_restful import Resource, reqparse
 
+from models.hotel import HotelModel
+
 hoteis = [
     {
         'hotel_id': 'alpha',
@@ -32,15 +34,6 @@ hoteis = [
 ]
 
 
-class HotelModel:
-    def __init__(self, hotel_id, nome, estrelas, diaria, cidade):
-        self.hotel_id = hotel_id
-        self.nome = nome
-        self.estrelas = estrelas
-        self.diaria = diaria
-        self.cidade = cidade
-
-
 class Hoteis(Resource):
     @staticmethod
     def get():
@@ -71,14 +64,17 @@ class Hotel(Resource):
     @staticmethod
     def post(hotel_id):
         dados = Hotel.argumentos.parse_args()
-        novo_hotel = {'hotel_id': hotel_id, **dados}
+        obj_hotel = HotelModel(hotel_id, **dados)
+        novo_hotel = obj_hotel.json()
+        # novo_hotel = {'hotel_id': hotel_id, **dados}
         hoteis.append(novo_hotel)
         return novo_hotel, 200
 
     @staticmethod
     def put(hotel_id):
         dados = Hotel.argumentos.parse_args()
-        novo_hotel = {'hotel_id': hotel_id, **dados}
+        obj_hotel = HotelModel(hotel_id, **dados)
+        novo_hotel = obj_hotel.json()
         hotel = Hotel.find_by_id(hotel_id)
         if hotel:
             hotel.update(novo_hotel)

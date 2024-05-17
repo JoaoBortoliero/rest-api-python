@@ -42,8 +42,8 @@ class Hoteis(Resource):
 
 class Hotel(Resource):
     atributos = reqparse.RequestParser()
-    atributos.add_argument('nome')
-    atributos.add_argument('estrelas')
+    atributos.add_argument('nome', type=str, required=True, help="The field 'name' cannot be left blank.")
+    atributos.add_argument('estrelas', type=float, required=True, help="The field 'estrelas' cannot be left blank")
     atributos.add_argument('diaria')
     atributos.add_argument('cidade')
 
@@ -61,7 +61,10 @@ class Hotel(Resource):
 
         dados = Hotel.atributos.parse_args()
         hotel = HotelModel(hotel_id, **dados)
-        hotel.save_hotel()
+        try:
+            hotel.save_hotel()
+        except:
+            return {'message': 'An internal error occurred trying to save hotel.'}, 500  # Internal Server Error
         return hotel.json()
 
     @staticmethod
@@ -73,13 +76,19 @@ class Hotel(Resource):
             hotel_located.save_hotel()
             return hotel_located.json(), 200  # OK
         hotel = HotelModel(hotel_id, **dados)
-        hotel.save_hotel()
+        try:
+            hotel.save_hotel()
+        except:
+            return {'message': 'An internal error occurred trying to save hotel.'}, 500  # Internal Server Error
         return hotel.json(), 201  # 201 = criado
 
     @staticmethod
     def delete(hotel_id):
         hotel = HotelModel.find_by_id(hotel_id)
         if hotel:
-            hotel.delete_hotel()
+            try:
+                hotel.delete_hotel()
+            except:
+                return {'message': 'An internal error occurred trying to delete hotel.'}, 500  # Internal Server Error
             return {'message': 'Hotel deleted.'}
         return {'message': 'Hotel not found.'}, 404

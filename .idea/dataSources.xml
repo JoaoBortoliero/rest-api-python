@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="banco" uuid="24f12249-d93c-49a4-950f-1722bb04b475">
+    <data-source source="LOCAL" name="database" uuid="285e8450-03b2-47f5-912d-cc637cda1e67">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\borto\Área de Trabalho\Py\rest-api-python\instance\banco.db</jdbc-url>
+      <jdbc-url>jdbc:sqlite:C:\Users\borto\Área de Trabalho\Py\rest-api-python\instance\database.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
       <libraries>
         <library>

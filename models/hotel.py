@@ -2,7 +2,7 @@ from sql_alchemy import database
 
 
 class HotelModel(database.Model):
-    __tablename__ = 'hoteis'
+    __tablename__ = 'hotels'
 
     hotel_id = database.Column(database.String, primary_key=True)
     nome = database.Column(database.String(80))

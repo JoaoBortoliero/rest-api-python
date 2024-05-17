@@ -6,11 +6,11 @@ class UserModel(database.Model):
 
     user_id = database.Column(database.Integer, primary_key=True)
     login = database.Column(database.String(40))
-    senha = database.Column(database.String(40))
+    password = database.Column(database.String(40))
 
-    def __init__(self, login, senha):
+    def __init__(self, login, password):
         self.login = login
-        self.senha = senha
+        self.password = password
 
     def json(self):
         return {
@@ -21,6 +21,13 @@ class UserModel(database.Model):
     @classmethod
     def find_by_id(cls, user_id):
         user = cls.query.filter_by(user_id=user_id).first()
+        if user:
+            return user
+        return None
+
+    @classmethod
+    def find_by_login(cls, login):
+        user = cls.query.filter_by(login=login).first()
         if user:
             return user
         return None

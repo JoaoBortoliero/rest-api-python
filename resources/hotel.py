@@ -6,7 +6,7 @@ from models.hotel import HotelModel
 class Hotels(Resource):
     @staticmethod
     def get():
-        return {'Hoteis': [hotel.json() for hotel in HotelModel.query.all()]}
+        return {'Hotels': [hotel.json() for hotel in HotelModel.query.all()]}
 
 
 class Hotel(Resource):

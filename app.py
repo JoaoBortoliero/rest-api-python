@@ -1,6 +1,7 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restful import Api
 
+from blacklist import BLACKLIST
 from resources.hotel import Hotels, Hotel
 from resources.user import User, UserRegister, UserLogin, UserLogout
 
@@ -13,6 +14,17 @@ app.config['JWT_SECRET_KEY'] = 'DontTellAnyone'
 app.config['JWT_BLACKLIST_ENABLED'] = True
 api = Api(app)
 jwt = JWTManager(app)
+
+
+@jwt.token_in_blocklist_loader
+def verify_blacklist(self, token):
+    return token['jti'] in BLACKLIST
+
+
+@jwt.revoked_token_loader
+def token_invalid(jwt_header, jwt_payload):
+    return jsonify({'message': 'You have been logged out.'}), 401  # Unauthorized
+
 
 api.add_resource(Hotels, '/hotels')
 api.add_resource(Hotel, '/hotels/<string:hotel_id>')

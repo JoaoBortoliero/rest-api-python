@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse
 
 from models.hotel import HotelModel
+from flask_jwt_extended import jwt_required
 
 
 class Hotels(Resource):
@@ -23,8 +24,8 @@ class Hotel(Resource):
             return hotel.json()
         return {'message': 'Hotel not found.'}, 404  # Not Found
 
-    @staticmethod
-    def post(hotel_id):
+    @jwt_required()  # Decorador para exigir autenticação
+    def post(self, hotel_id):
         if HotelModel.find_by_id(hotel_id):
             return {"message": f"Hotel id '{hotel_id}' already exists."}, 400  # Bad request
 
@@ -36,8 +37,8 @@ class Hotel(Resource):
             return {'message': 'An internal error occurred trying to save hotel.'}, 500  # Internal Server Error
         return hotel.json()
 
-    @staticmethod
-    def put(hotel_id):
+    @jwt_required()
+    def put(self, hotel_id):
         dados = Hotel.atributos.parse_args()
         hotel_located = HotelModel.find_by_id(hotel_id)
         if hotel_located:
@@ -51,8 +52,8 @@ class Hotel(Resource):
             return {'message': 'An internal error occurred trying to save hotel.'}, 500  # Internal Server Error
         return hotel.json(), 201  # 201 = criado
 
-    @staticmethod
-    def delete(hotel_id):
+    @jwt_required()
+    def delete(self, hotel_id):
         hotel = HotelModel.find_by_id(hotel_id)
         if hotel:
             try:
